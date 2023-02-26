@@ -25,6 +25,26 @@ jobs:
       - run: exit 1
         continue-on-error: true
 
+  tflint:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: terraform-linters/setup-tflint@v1
+        name: Setup TFLint
+        with:
+          tflint_version: latest
+
+      - name: Run TFLint
+        run: tflint -f json aws > tflint-output.json
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: TFLint
+          path: tflint-output.json
+        if: always()
+
   prod:
     runs-on: ubuntu-20.04
     needs: integration
